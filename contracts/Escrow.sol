@@ -17,7 +17,7 @@ contract Escrow {
         address payable _seller,
         address _lender,
         address _inspector
-    ) public {
+    ) {
         nft_address = _nft_address;
         seller = _seller;
         lender = _lender;
