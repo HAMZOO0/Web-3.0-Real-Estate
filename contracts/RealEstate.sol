@@ -10,15 +10,14 @@ contract RealEstate is ERC721URIStorage {
 
     function mint(string memory tokenURI) public returns (uint256) {
         uint256 new_itemID = _nextTokenId++; // incrementing the token ID
-        _mint(msg.sender, new_itemID);      // minting the token to the sender
-        _setTokenURI (new_itemID, tokenURI); // setting the token URI
+        _mint(msg.sender, new_itemID); // minting the token to the sender
+        _setTokenURI(new_itemID, tokenURI); // setting the token URI
 
         return new_itemID;
     }
 
-    //return the total number of NFTs minted so far 
-    function total_supply() public view returns(uint256){ 
+    //return the total number of NFTs minted so far
+    function total_supply() public view returns (uint256) {
         return _nextTokenId;
-        
     }
 }
