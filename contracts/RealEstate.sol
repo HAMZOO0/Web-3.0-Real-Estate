@@ -8,16 +8,14 @@ contract RealEstate is ERC721URIStorage {
     uint256 private _nextTokenId; // Keeps track of the next token ID to be minted
 
     // Constructor that initializes the ERC721 contract with a name and symbol
-    constructor(
-        string memory name,
-        string memory symbol
-    ) ERC721(name, symbol) {}
-
+    constructor() ERC721("RealEstate", "REAL") {
+        // Initialization code
+    }
     // Mint function to create a new NFT with a unique token ID and a specified URI
     function mint(string memory tokenURI) public returns (uint256) {
         uint256 new_itemID = _nextTokenId++; // Incrementing the token ID for the next token
         _mint(msg.sender, new_itemID); // Minting the token and assigning it to the sender's address
-        _setTokenURI(new_itemID, tokenURI); // Setting the token's URI (metadata link) for the new token
+        _setTokenURI(new_itemID, tokenURI); // Setting  the token's URI (metadata link) for the new token
 
         return new_itemID; // Return the newly minted token ID
     }

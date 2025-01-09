@@ -64,3 +64,18 @@ describe('Simple Math Tests', () => {
 
 ```
 ---
+# Ethereum Transaction Signing and `ethers.js` Signers
+
+## Overview
+
+In Ethereum, signing a transaction is a crucial process where the user signs a transaction with their **private key** to prove ownership and authorize actions on the blockchain. This is used when interacting with smart contracts, deploying contracts, or calling contract functions.
+
+## Key Concepts
+
+### 1. **Signers**
+
+- **Definition**: `signers` refer to the Ethereum accounts (public addresses) that can sign transactions using their private keys. Each signer corresponds to an account that has access to the private key used for signing transactions.
+- **How to get signers**: Using the `ethers.js` library, you can obtain available signers by calling the `ethers.getSigners()` function.
+  ```js
+  const signers = await ethers.getSigners();
+  console.log(signers);
