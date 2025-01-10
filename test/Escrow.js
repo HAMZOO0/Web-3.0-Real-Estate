@@ -26,13 +26,14 @@ describe("Escrow", () => {
     real_estate_deploy = await real_estate_compile.deploy();
     console.log("RealEstate deployed to:", real_estate_deploy.address);
 
-    // this block is for trasection
+    // this block is for trasection - mint the nft with seller account
     {
       const trasection = await real_estate_deploy
         .connect(seller)
         .mint(
           "https://amethyst-rare-eel-981.mypinata.cloud/ipfs/QmfSHSg1xzt7jvCBQXDQZ3mc4JZCmKVgSXdrfTxXiovLW4"
         );
+
       // Check owner of token ID 0
       const owner = await real_estate_deploy.ownerOf(0);
       console.log("Owner of token ID 0:", owner);
@@ -154,26 +155,73 @@ describe("Escrow", () => {
 
       expect(result).to.equal(true);
     });
-    describe("Approval ", () => {
-      it("Update approval Test", async () => {
-        const trasection_buyer = await Escrow_deploy.connect(
-          buyer
-        ).sell_approval(0);
-        await trasection_buyer.wait();
-        expect(await Escrow_deploy.approval(0, buyer.address)).to.equal(true);
+  });
+  describe("Approval ", () => {
+    it("Update approval Test", async () => {
+      const trasection_buyer = await Escrow_deploy.connect(buyer).sell_approval(
+        0
+      );
+      await trasection_buyer.wait();
+      expect(await Escrow_deploy.approval(0, buyer.address)).to.equal(true);
 
-        const trasection_seller = await Escrow_deploy.connect(
-          seller
-        ).sell_approval(0);
-        await trasection_seller.wait();
-        expect(await Escrow_deploy.approval(0, seller.address)).to.equal(true);
+      const trasection_seller = await Escrow_deploy.connect(
+        seller
+      ).sell_approval(0);
+      await trasection_seller.wait();
+      expect(await Escrow_deploy.approval(0, seller.address)).to.equal(true);
 
-        const trasection_lender = await Escrow_deploy.connect(
-          lender
-        ).sell_approval(0);
-        await trasection_lender.wait();
-        expect(await Escrow_deploy.approval(0, lender.address)).to.equal(true);
-      });
+      const trasection_lender = await Escrow_deploy.connect(
+        lender
+      ).sell_approval(0);
+      await trasection_lender.wait();
+      expect(await Escrow_deploy.approval(0, lender.address)).to.equal(true);
     });
   });
+
+
+  describe(" Sell", async () => {
+    before(async() => {
+      let transaction;
+  
+      // Buyer deposits earnest money
+      transaction = await Escrow_deploy.connect(buyer).deposite_earnest(0, {
+        value: tokens(5),
+      });
+      await transaction.wait();
+  
+      // Inspector passes inspection
+      transaction = await Escrow_deploy.connect(inspector).inpection_test(0, true);
+      await transaction.wait();
+  
+      // Approvals from buyer, seller, and lender
+      transaction = await Escrow_deploy.connect(buyer).sell_approval(0);
+      await transaction.wait();
+  
+      transaction = await Escrow_deploy.connect(seller).sell_approval(0);
+      await transaction.wait();
+  
+      transaction = await Escrow_deploy.connect(lender).sell_approval(0);
+      await transaction.wait();
+  
+      // Check Escrow balance
+      const escrowBalance = await Escrow_deploy.getBalance();
+      console.log("Total balance:", escrowBalance.toString());
+  
+      // Lender sends additional funds
+      transaction= await lender.sendTransaction({
+        to: Escrow_deploy.address,
+        value: tokens(5),
+      });
+      await transaction.wait();
+      console.log("lender_transaction:", lenderTransaction);
+  
+      // Finalize the sale
+      transaction = await Escrow_deploy.connect(seller).finalize_sell(0);
+      await transaction.wait();
+    })
+    it("working", async () => {
+      
+    });
+  });
+  
 });

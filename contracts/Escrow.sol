@@ -39,7 +39,7 @@ contract Escrow {
     mapping(uint => uint) public escrow_amount;
     mapping(uint => address) public buyer;
     mapping(uint => bool) public inpection_check;
-    mapping(uint=> mapping (address=>bool)) public approval ; 
+    mapping(uint => mapping(address => bool)) public approval;
 
     constructor(
         address _nft_address,
@@ -53,6 +53,7 @@ contract Escrow {
         Inspector = _inspector;
     }
 
+    // Transfer the owner-ship to escrow
     function list(
         uint _nftID,
         address _buyer,
@@ -84,8 +85,24 @@ contract Escrow {
         inpection_check[_nft_id] = _result;
     }
 
-    function sell_approval(uint _nft_id) public{
+    function sell_approval(uint _nft_id) public {
         approval[_nft_id][msg.sender] = true;
+    }
+
+    // todo :
+    /* 
+    --> Required inspetion status
+    --> Required sale to authorized
+    --> Required funds to currect ammount ...
+    -- > Tranfer NFT 
+    --> Tranfer Funds to Seller 
+    */
+    function finalize_sell(uint _nft_id) public {
+        require(inpection_check[_nft_id]);
+        require(approval[_nft_id][buyer[_nft_id]]);
+        require(approval[_nft_id][seller]);
+        require(approval[_nft_id][lender]);
+        require(address(this).balance >= escrow_amount[_nft_id]);
     }
 
     function getBalance() public view returns (uint) {
