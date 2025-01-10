@@ -54,12 +54,17 @@ describe("Escrow", () => {
     //* Without this step, the Escrow contract cannot do anything with the NFT because the seller still owns it.
     let trasection = await real_estate_deploy
       .connect(seller)
-      .approve(Escrow_deploy.address, 0); // getting approval 
+      .approve(Escrow_deploy.address, 0); // getting approval
     await trasection.wait();
 
     // sting the NFT in the Escrow contract so it can handle the sale.
-    trasection = await Escrow_deploy.connect(seller).list(0); // calling the list function of escrow
-    await trasection.wait(); // here we seller calling list which tranfer the ownership to escrow account 
+    trasection = await Escrow_deploy.connect(seller).list(
+      0,
+      buyer.address,
+      tokens(10),
+      tokens(5)
+    ); // calling the list function of escrow
+    await trasection.wait(); // here we seller calling list which tranfer the ownership to escrow account
   });
 
   // here we test all addresses
@@ -94,10 +99,47 @@ describe("Escrow", () => {
         await real_estate_deploy.ownerOf(0)
       );
       console.log(" Escrow_deploy.address", await Escrow_deploy.address);
+      console.log(" seller.address", await seller.address);
 
+      //now the address of real_estate_Depl.owerof(nft_id(0)) == eswrow address
       expect(await real_estate_deploy.ownerOf(0)).to.equal(
         Escrow_deploy.address
       );
+    });
+
+    it("Check Listing of NFT", async () => {
+      const check = await Escrow_deploy.is_listed_check(0);
+      expect(check).to.equal(true);
+    });
+
+    it("Buyer check", async () => {
+      const Escrow_deploy_buyer = await Escrow_deploy.buyer(0);
+      expect(Escrow_deploy_buyer).to.equal(buyer.address);
+    });
+    it("Purchase Price Check", async () => {
+      const Escrow_deploy_buyer = await Escrow_deploy.purchase_price(0);
+      expect(Escrow_deploy_buyer).to.equal(tokens(10));
+    });
+    it("Escrow Amount Check", async () => {
+      const Escrow_deploy_buyer = await Escrow_deploy.escrow_amount(0);
+      expect(Escrow_deploy_buyer).to.equal(tokens(5));
+    });
+  });
+
+  describe("Deposite Funds", () => {
+    it("Buyer to Escrow Tranfer ", async () => {
+      const trasection = await Escrow_deploy.connect(buyer).deposite_earnest(
+        0,
+        {
+          value: tokens(5),
+        }
+      );
+      await trasection.wait();
+
+      const escrow_balance = await Escrow_deploy.getBalance();
+      expect(escrow_balance).to.equal(tokens(5));
+      console.log("trasection :: ", trasection);
+      console.log("escrow_balance :: ", escrow_balance);
     });
   });
 });
