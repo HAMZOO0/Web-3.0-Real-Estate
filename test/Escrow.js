@@ -144,7 +144,7 @@ describe("Escrow", () => {
   });
 
   describe("Inspection ", () => {
-    it("Update Inspection status ", async () => {
+    it("Update Inspection Test", async () => {
       const trasection = await Escrow_deploy.connect(inspector).inpection_test(
         0,
         true
@@ -153,6 +153,27 @@ describe("Escrow", () => {
       const result = await Escrow_deploy.inpection_check(0);
 
       expect(result).to.equal(true);
+    });
+    describe("Approval ", () => {
+      it("Update approval Test", async () => {
+        const trasection_buyer = await Escrow_deploy.connect(
+          buyer
+        ).sell_approval(0);
+        await trasection_buyer.wait();
+        expect(await Escrow_deploy.approval(0, buyer.address)).to.equal(true);
+
+        const trasection_seller = await Escrow_deploy.connect(
+          seller
+        ).sell_approval(0);
+        await trasection_seller.wait();
+        expect(await Escrow_deploy.approval(0, seller.address)).to.equal(true);
+
+        const trasection_lender = await Escrow_deploy.connect(
+          lender
+        ).sell_approval(0);
+        await trasection_lender.wait();
+        expect(await Escrow_deploy.approval(0, lender.address)).to.equal(true);
+      });
     });
   });
 });

@@ -39,6 +39,7 @@ contract Escrow {
     mapping(uint => uint) public escrow_amount;
     mapping(uint => address) public buyer;
     mapping(uint => bool) public inpection_check;
+    mapping(uint=> mapping (address=>bool)) public approval ; 
 
     constructor(
         address _nft_address,
@@ -81,6 +82,10 @@ contract Escrow {
         bool _result
     ) public only_Inspector(_nft_id) {
         inpection_check[_nft_id] = _result;
+    }
+
+    function sell_approval(uint _nft_id) public{
+        approval[_nft_id][msg.sender] = true;
     }
 
     function getBalance() public view returns (uint) {
