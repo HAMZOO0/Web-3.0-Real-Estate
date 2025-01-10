@@ -142,4 +142,17 @@ describe("Escrow", () => {
       console.log("escrow_balance :: ", escrow_balance);
     });
   });
+
+  describe("Inspection ", () => {
+    it("Update Inspection status ", async () => {
+      const trasection = await Escrow_deploy.connect(inspector).inpection_test(
+        0,
+        true
+      );
+      await trasection.wait();
+      const result = await Escrow_deploy.inpection_check(0);
+
+      expect(result).to.equal(true);
+    });
+  });
 });

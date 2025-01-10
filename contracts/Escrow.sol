@@ -15,8 +15,15 @@ contract Escrow {
     }
     modifier only_buyer(uint _nft_id) {
         require(
-             msg.sender== buyer[_nft_id],
+            msg.sender == buyer[_nft_id],
             "Only Buyer have permissions to call this method"
+        );
+        _;
+    }
+    modifier only_Inspector(uint _nft_id) {
+        require(
+            msg.sender == Inspector,
+            "Only Inspector have permissions to call this method"
         );
         _;
     }
@@ -31,6 +38,7 @@ contract Escrow {
     mapping(uint => uint) public purchase_price;
     mapping(uint => uint) public escrow_amount;
     mapping(uint => address) public buyer;
+    mapping(uint => bool) public inpection_check;
 
     constructor(
         address _nft_address,
@@ -62,13 +70,22 @@ contract Escrow {
         buyer[_nftID] = _buyer;
     }
 
+    //  Down payment
     function deposite_earnest(uint _nft_id) public payable only_buyer(_nft_id) {
-    // require(msg.value >= (purchase_price[_nft_id] +  escrow_amount[_nft_id]) );   //  buyer ballance havr greater then equal to the purchase price + escrow_amount 
-    require(msg.value >= escrow_amount[_nft_id] );  
-
+        // require(msg.value >= (purchase_price[_nft_id] +  escrow_amount[_nft_id]) );   //  buyer ballance havr greater then equal to the purchase price + escrow_amount
+        require(msg.value >= escrow_amount[_nft_id]);
     }
 
-    function getBalance()public view returns(uint) {
+    function inpection_test(
+        uint _nft_id,
+        bool _result
+    ) public only_Inspector(_nft_id) {
+        inpection_check[_nft_id] = _result;
+    }
+
+    function getBalance() public view returns (uint) {
         return address(this).balance;
     }
+
+    // function receive() external payable {}
 }
