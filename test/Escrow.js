@@ -127,6 +127,8 @@ describe("Escrow", () => {
     });
   });
 
+
+
   describe("Deposite Funds", () => {
     it("Buyer to Escrow Tranfer ", async () => {
       const trasection = await Escrow_deploy.connect(buyer).deposite_earnest(
@@ -136,6 +138,13 @@ describe("Escrow", () => {
         }
       );
       await trasection.wait();
+      
+
+      // here we check 5 eth in walle of Escrow_deploy 
+      const contractBalance = await Escrow_deploy.getBalance();
+      console.log(
+        `Contract Balance: ${ethers.utils.formatEther(contractBalance)} ETH`
+      );
 
       const escrow_balance = await Escrow_deploy.getBalance();
       expect(escrow_balance).to.equal(tokens(5));
@@ -178,50 +187,52 @@ describe("Escrow", () => {
     });
   });
 
-
   describe(" Sell", async () => {
-    before(async() => {
-      let transaction;
-  
-      // Buyer deposits earnest money
-      transaction = await Escrow_deploy.connect(buyer).deposite_earnest(0, {
-        value: tokens(5),
-      });
-      await transaction.wait();
-  
-      // Inspector passes inspection
-      transaction = await Escrow_deploy.connect(inspector).inpection_test(0, true);
-      await transaction.wait();
-  
-      // Approvals from buyer, seller, and lender
-      transaction = await Escrow_deploy.connect(buyer).sell_approval(0);
-      await transaction.wait();
-  
-      transaction = await Escrow_deploy.connect(seller).sell_approval(0);
-      await transaction.wait();
-  
-      transaction = await Escrow_deploy.connect(lender).sell_approval(0);
-      await transaction.wait();
-  
-      // Check Escrow balance
-      const escrowBalance = await Escrow_deploy.getBalance();
-      console.log("Total balance:", escrowBalance.toString());
-  
-      // Lender sends additional funds
-      transaction= await lender.sendTransaction({
-        to: Escrow_deploy.address,
-        value: tokens(5),
-      });
-      await transaction.wait();
-      console.log("lender_transaction:", lenderTransaction);
-  
+    before(async () => {
+      // ! we all clear these cases so i can't reinvent the wheel
+      // let transaction;
+
+      // // Buyer deposits earnest money
+      // transaction = await Escrow_deploy.connect(buyer).deposite_earnest(0, {
+      //   value: tokens(5),
+      // });
+      // await transaction.wait();
+
+      // // Inspector passes inspection
+      // transaction = await Escrow_deploy.connect(inspector).inpection_test(0, true);
+      // await transaction.wait();
+
+      // // Approvals from buyer, seller, and lender
+      // transaction = await Escrow_deploy.connect(buyer).sell_approval(0);
+      // await transaction.wait();
+
+      // transaction = await Escrow_deploy.connect(seller).sell_approval(0);
+      // await transaction.wait();
+
+      // transaction = await Escrow_deploy.connect(lender).sell_approval(0);
+      // await transaction.wait();
+
+      // // Check Escrow balance
+      // const escrowBalance = await Escrow_deploy.getBalance();
+      // console.log("Total balance:", escrowBalance.toString());
+
+      // // Lender sends additional funds
+      // transaction= await lender.sendTransaction({
+      //   to: Escrow_deploy.address,
+      //   value: tokens(5),
+      // });
+      // await transaction.wait();
+      // console.log("lender_transaction:", lenderTransaction);
+
       // Finalize the sale
-      transaction = await Escrow_deploy.connect(seller).finalize_sell(0);
+      const transaction = await Escrow_deploy.connect(seller).finalize_sell(0);
       await transaction.wait();
-    })
-    it("working", async () => {
-      
+    });
+    it("Esrow Funds trasfer to Seller ", async () => {
+      expect(await Escrow_deploy.getBalance()).to.equal(0); // check eswor send the funds to seller
+    });
+    it("Esrow Funds trasfer to Seller ", async () => {
+      expect(await Escrow_deploy.getBalance()).to.equal(0); // check eswor send the funds to seller
     });
   });
-  
 });

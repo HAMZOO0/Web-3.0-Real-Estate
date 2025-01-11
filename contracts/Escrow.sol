@@ -89,8 +89,7 @@ contract Escrow {
         approval[_nft_id][msg.sender] = true;
     }
 
-    // todo :
-    /* 
+    /*  // todo :
     --> Required inspetion status
     --> Required sale to authorized
     --> Required funds to currect ammount ...
@@ -98,11 +97,24 @@ contract Escrow {
     --> Tranfer Funds to Seller 
     */
     function finalize_sell(uint _nft_id) public {
-        require(inpection_check[_nft_id]);
-        require(approval[_nft_id][buyer[_nft_id]]);
-        require(approval[_nft_id][seller]);
-        require(approval[_nft_id][lender]);
-        require(address(this).balance >= escrow_amount[_nft_id]);
+        require(
+            inpection_check[_nft_id] == true,
+            "inpection_check of this nft is false it must be true "
+        );
+        require(
+            approval[_nft_id][buyer[_nft_id]],
+            "Buyer can't approved this NFT "
+        );
+        require(approval[_nft_id][seller], " Seller can't approved this NFT ");
+        require(approval[_nft_id][lender], "Lender Can't approuve  this NFT");
+        require(
+            address(this).balance >= escrow_amount[_nft_id],
+            "Your Balanece is not Enough for Escrow "
+        );
+
+
+// Tranfer Funds to Seller 
+       (bool sent ,bytes memory data )  = seller.call{value:address(this).balance}("Escrow transfer funds to seller ");
     }
 
     function getBalance() public view returns (uint) {
