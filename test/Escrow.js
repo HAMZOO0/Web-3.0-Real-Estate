@@ -192,10 +192,10 @@ describe("Escrow", () => {
       // ! we all clear these cases so i can't reinvent the wheel
 
       // // Buyer deposits earnest money
-     const a = await Escrow_deploy.connect(buyer).deposite_earnest(0, {
-        value: tokens(5),
-      });
-      await a.wait();
+    //  const a = await Escrow_deploy.connect(buyer).deposite_earnest(0, {
+    //     value: tokens(5),
+    //   });
+    //   await a.wait();
       
 
       // // Inspector passes inspection
