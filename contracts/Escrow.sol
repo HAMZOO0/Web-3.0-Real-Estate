@@ -112,9 +112,20 @@ contract Escrow {
             "Your Balanece is not Enough for Escrow "
         );
 
+        // Tranfer Funds to Seller
+        (bool sent, bytes memory data) = seller.call{
+            value: address(this).balance
+        }("Escrow transfer funds to seller ");
 
-// Tranfer Funds to Seller 
-       (bool sent ,bytes memory data )  = seller.call{value:address(this).balance}("Escrow transfer funds to seller ");
+        // tranfer the ownership of esrow to buyer
+        IERC721(nft_address).transferFrom(
+            address(this),
+            buyer[_nft_id],
+            _nft_id
+        );
+
+        // now it is no londer listed
+        is_listed_check[_nft_id] = true;
     }
 
     function getBalance() public view returns (uint) {

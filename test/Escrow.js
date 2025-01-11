@@ -190,13 +190,13 @@ describe("Escrow", () => {
   describe(" Sell", async () => {
     before(async () => {
       // ! we all clear these cases so i can't reinvent the wheel
-      // let transaction;
 
       // // Buyer deposits earnest money
-      // transaction = await Escrow_deploy.connect(buyer).deposite_earnest(0, {
-      //   value: tokens(5),
-      // });
-      // await transaction.wait();
+     const a = await Escrow_deploy.connect(buyer).deposite_earnest(0, {
+        value: tokens(5),
+      });
+      await a.wait();
+      
 
       // // Inspector passes inspection
       // transaction = await Escrow_deploy.connect(inspector).inpection_test(0, true);
@@ -231,8 +231,8 @@ describe("Escrow", () => {
     it("Esrow Funds trasfer to Seller ", async () => {
       expect(await Escrow_deploy.getBalance()).to.equal(0); // check eswor send the funds to seller
     });
-    it("Esrow Funds trasfer to Seller ", async () => {
-      expect(await Escrow_deploy.getBalance()).to.equal(0); // check eswor send the funds to seller
+    it("Nft Transfer Ewsrow to Buyer  ", async () => {
+      expect(await  real_estate_deploy.ownerOf(0)).to.equal(await buyer.address); // check eswor send the funds to seller
     });
   });
 });
