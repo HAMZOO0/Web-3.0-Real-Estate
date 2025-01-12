@@ -1,9 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-
 import "./App.css";
 
+// Import the NavBar component (Renamed correctly)
+import { NavBar } from "./components/Nav.jsx"; // Correct import
+
 function App() {
+  // State for storing the account
+  const [get_account, set_account] = useState(null);
+
+  // Function to connect to the blockchain and get the account
   const blockchain_data = async () => {
     try {
       // Check if MetaMask is installed
@@ -14,16 +20,14 @@ function App() {
 
       // Initialize the provider
       const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
 
-      //   // Request accounts from MetaMask
-      //   await provider.send("eth_requestAccounts", []);
-
-      //   // Get the signer (the connected account)
-      //   const signer = provider.getSigner();
-
-      // Log provider and account information
+      // Set the account
+      set_account(accounts[0]); // Store the first account from the returned array
       console.log("Provider:", provider);
-      //   console.log("Connected Account:", await signer.getAddress());
+      console.log("Account:", accounts[0]);
     } catch (error) {
       console.error("Error connecting to blockchain:", error);
     }
@@ -32,12 +36,25 @@ function App() {
   // Run the blockchain connection logic on mount
   useEffect(() => {
     blockchain_data();
-  }, []); // The empty dependency array ensures it runs only once when the component is mounted.
+  }, []);
+
+  // Log account when it's updated
+  useEffect(() => {
+    if (get_account) {
+      console.log("Account updated: ", get_account);
+    }
+  }, [get_account]);
 
   return (
-    <div>
-      <p className="bg-black text-white inline-block p-10 m-10">Hello Web3</p>
-    </div>
+    <>
+      <div>
+      <NavBar account={get_account}  set_account={set_account}  />
+
+        <div>
+          <p>Hi</p>
+        </div>
+      </div>
+    </>
   );
 }
 
