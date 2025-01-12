@@ -4,6 +4,15 @@ import "./App.css";
 
 // Import the NavBar component (Renamed correctly)
 import { NavBar } from "./components/Nav.jsx"; // Correct import
+import { Search } from "./components/search.jsx"; // Correct import
+import { PropertyCard } from "./components/Card.jsx"; // Correct import
+
+// config 
+import config from "../config.json"
+
+//ABIs
+import RealEstate from "../abis/RealEstate.json"
+import Esrow from "../abis/Esrow.json"
 
 function App() {
   // State for storing the account
@@ -21,7 +30,8 @@ function App() {
       // Initialize the provider
       const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-      window.ethereum.on("accountChange", async () => { // lister for account change
+      window.ethereum.on("accountChange", async () => {
+        // lister for account change
 
         const accounts = await window.ethereum.request({
           method: "eth_requstAccounts",
@@ -50,12 +60,35 @@ function App() {
 
   return (
     <>
-      <div>
-        <NavBar account={get_account} set_account={set_account} />
+      <NavBar account={get_account} set_account={set_account} />
+      <div className="relative h-screen bg-realstate_pic bg-cover bg-center bg-opacity-45 backdrop-blur-md">
+        {/* Add a dark overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-md"></div>
 
-        <div>
-          <p>Hi</p>
+        {/* Navigation Bar */}
+
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <div className="text-center space-y-4">
+            <h2 className="text-white text-3xl font-bold pb-10">
+              Search it. Explore it. Buy it
+            </h2>
+            <Search />
+          </div>
         </div>
+
+        <div id="cards" className="flex items-center justify-center  mt-9">
+          <div className="m-6">
+          <PropertyCard image={"aa"} ethPrice={"10"} squareFeet={10} location={"Lahore"}  />
+          </div>
+          <div className="m-6">
+          <PropertyCard image={"aa"} ethPrice={"10"} squareFeet={10} location={"Lahore"}  />
+          </div>
+          <div className="m-6">
+          <PropertyCard image={"aa"} ethPrice={"10"} squareFeet={10} location={"Lahore"}  />
+          </div>
+       
+        </div>
+        
       </div>
     </>
   );
