@@ -20,14 +20,17 @@ function App() {
 
       // Initialize the provider
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
 
-      // Set the account
-      set_account(accounts[0]); // Store the first account from the returned array
-      console.log("Provider:", provider);
-      console.log("Account:", accounts[0]);
+      window.ethereum.on("accountChange", async () => { // lister for account change
+
+        const accounts = await window.ethereum.request({
+          method: "eth_requstAccounts",
+        });
+        const account = ethers.utils.getAddress(accounts[0]);
+        set_account(account);
+      });
+      // console.log("Provider:", provider);
+      console.log("Account:", account[0]);
     } catch (error) {
       console.error("Error connecting to blockchain:", error);
     }
@@ -48,7 +51,7 @@ function App() {
   return (
     <>
       <div>
-      <NavBar account={get_account}  set_account={set_account}  />
+        <NavBar account={get_account} set_account={set_account} />
 
         <div>
           <p>Hi</p>
