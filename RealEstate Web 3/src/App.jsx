@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 
-// Import the NavBar component (Renamed correctly)
-import { NavBar } from "./components/Nav.jsx"; // Correct import
-import { Search } from "./components/search.jsx"; // Correct import
-import { PropertyCard } from "./components/Card.jsx"; // Correct import
+//components
+import { NavBar } from "./components/Nav.jsx";
+import { Search } from "./components/search.jsx"; 
+import { PropertyCard } from "./components/Card.jsx"; 
+import { Home } from "./components/Home.jsx"; 
 
 // config
 import config from "../config.json";
@@ -123,7 +124,7 @@ function App() {
 
         <div id="cards" className="flex items-center justify-center mt-9">
           {homes.map((home, index) => (
-            <div className="m-6" key={index} onClick={taggle_prop(home)}>
+            <div className="m-6 hover:cursor-pointer" key={index} onClick={()=>taggle_prop(home)}>
               <PropertyCard
                 image={home.image}
                 ethPrice={home.attributes[0].value}
@@ -133,9 +134,9 @@ function App() {
             </div>
           ))}
         </div>
-        {toggle ? && (
-          <Home/>
-        ) :()}
+        {toggle  && (
+          <Home home={home } provider={ provider} esrow={get_esrow } toggle_pop={taggle_prop} />
+        ) }
       </div>
     </>
   );
