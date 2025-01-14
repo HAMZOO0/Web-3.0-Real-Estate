@@ -40,9 +40,6 @@ export function Home({ home, provider, esrow, toggle_pop, Account }) {
       const inspectorAddress = await esrow.Inspector();
       set_inspector(normalizeAddress(inspectorAddress));
 
-      console.log(home.id , buyer   , "buyer" );
-      
-
       // Approvals
       set_has_bought(await esrow.approval(home.id, buyerAddress));
       set_has_lended(await esrow.approval(home.id, lenderAddress));
@@ -52,15 +49,85 @@ export function Home({ home, provider, esrow, toggle_pop, Account }) {
       console.error("Error fetching accounts:", error);
     }
   };
-
+  
   const fetch_owner = async () => {
     try {
-      if (await esrow.is_listed_check(home.id)) return;
+      // if (await esrow.is_listed_check(home.id)) return;
+
       const owner = await esrow.buyer(home.id);
       set_owner(normalizeAddress(owner)); // Normalize owner address
     } catch (error) {
       console.error("Error fetching owner:", error);
     }
+  };
+  
+  // buy
+  const buy_handler = async () => {
+
+    const escrow_amount = await esrow.escrow_amount(home.id);
+    const signer = await provider.getSigner();
+
+    //buyer desposut ernes
+
+    let transaction = await esrow
+      .connect(signer)
+      .deposite_earnest(home.id, { value: escrow_amount });
+
+    // Buyer approves ..
+    transaction = await esrow.connect(signer).sell_approval(home.id);
+    await transaction.wait();
+
+    set_has_bought(true);
+  };
+
+  //inspect
+  const inspect_handler = async () => {
+    const signer = await provider.getSigner();
+
+    // inspect and update status
+    const transaction = await esrow
+      .connect(signer)
+      .inpection_test(home.id, true);
+    await transaction.wait();
+    set_has_inspected(true);
+  };
+  // lender
+  const lend_handler = async () => {
+    console.log("salam");
+
+    const signer = await provider.getSigner();
+    // lender approvies
+    const transaction = await esrow.connect(signer).sell_approval(home.id);
+    await transaction.wait();
+
+    // lend sends funds to contract ...
+
+    // let lend_amount =
+    //   (await esrow.purchase_price(home.id) -
+    //   await esrow.escrow_amount(home.id));
+    
+    //   transaction = await signer.sendTransaction({
+    //   to: esrow.address,
+    //   value: lend_amount.toString(),
+    //   gasLimit: 100000,
+    //   });
+    
+    // await transaction.wait()
+
+    set_has_lended(true);
+    console.log("Lender process completed.");
+ };
+
+  // sell
+  const sell_handler = async () => {
+    const signer = await provider.getSigner();
+    let transaction = await esrow.connect(signer).sell_approval(home.id);
+
+    await transaction.wait();
+
+    // seller finalize..
+    transaction = await esrow.connect(signer).finalize_sell(home.id);
+    set_has_sold(true);
   };
 
   useEffect(() => {
@@ -75,12 +142,20 @@ export function Home({ home, provider, esrow, toggle_pop, Account }) {
     }
 
     if (owner) {
-        return <div id="owner">Owned by {owner.slice(0, 6) + "..." + owner.slice(-4)}</div>; 
+      return (
+        <div id="owner">
+          Owned by {owner.slice(0, 6) + "..." + owner.slice(-4)}
+        </div>
+      );
     }
 
     if (account === inspector) {
       return (
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg"
+          onClick={inspect_handler}
+          disabled={has_inspected}
+        >
           Approve Inspection
         </button>
       );
@@ -88,7 +163,11 @@ export function Home({ home, provider, esrow, toggle_pop, Account }) {
 
     if (account === lender) {
       return (
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg"
+          onClick={lend_handler}
+          disabled={has_lended}
+        >
           Approve & Lend
         </button>
       );
@@ -96,7 +175,11 @@ export function Home({ home, provider, esrow, toggle_pop, Account }) {
 
     if (account === seller) {
       return (
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg"
+          onClick={sell_handler}
+          disabled={has_sold}
+        >
           Approve & Sell
         </button>
       );
@@ -104,7 +187,11 @@ export function Home({ home, provider, esrow, toggle_pop, Account }) {
 
     if (account === buyer) {
       return (
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-lg"
+          onClick={buy_handler}
+          disabled={has_bought}
+        >
           Buy
         </button>
       );
@@ -123,7 +210,11 @@ export function Home({ home, provider, esrow, toggle_pop, Account }) {
           X
         </button>
         <div className="home__image">
-          <img src={home.image} alt="Home" className="w-full h-auto rounded-md" />
+          <img
+            src={home.image}
+            alt="Home"
+            className="w-full h-auto rounded-md"
+          />
         </div>
         <div className="home__overview mt-4">
           <h1 className="text-2xl font-semibold">{home.name}</h1>
