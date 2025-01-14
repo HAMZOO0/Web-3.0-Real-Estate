@@ -59,6 +59,14 @@ function App() {
       console.log("esrow Contract:", eesrow);
 
       set_esrow(eesrow);
+      // Listen for account changes
+      window.ethereum.on("accountsChanged", (accounts) => {
+        if (accounts.length > 0) {
+          set_account(accounts[0]); // Update the state with the new account
+        } else {
+          set_account(null); // Handle case where no accounts are connected
+        }
+      })
 
       // Call total_supply
       const totalSupply = await realEstate.total_supply();
@@ -135,7 +143,7 @@ function App() {
           ))}
         </div>
         {toggle  && (
-          <Home home={home } provider={ provider} esrow={get_esrow } toggle_pop={taggle_prop} />
+          <Home home={home } provider={ provider} esrow={get_esrow } toggle_pop={taggle_prop} Account={{get_account}} />
         ) }
       </div>
     </>
