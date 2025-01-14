@@ -57,9 +57,10 @@ npm run dev
 
 ---
 ### Screen Shorts 
-![screenshot-rocks (8)](https://github.com/user-attachments/assets/1a1e1e51-2df1-4ea8-9dc4-e202214a5817)
 
+<img width="803" alt="image" src="https://github.com/user-attachments/assets/9ecf1b18-31c5-4a60-a66d-be1bf8eacedb" />
 
-![screenshot-rocks (9)](https://github.com/user-attachments/assets/b928e895-2dd5-4ce1-875a-f06f36d3a7a6)
+<img width="826" alt="image" src="https://github.com/user-attachments/assets/45d0a60a-a148-4fad-b526-4501589dc048" />
 
-![screenshot-rocks (10)](https://github.com/user-attachments/assets/e89d209e-3616-444d-a8f6-ab3b1f2bfe09)
+<img width="781" alt="image" src="https://github.com/user-attachments/assets/bbd75fc9-e2fe-4eee-baee-3fcaea61e114" />
+
